@@ -1,0 +1,231 @@
+{
+  "weekStart": "2026-09-21",
+  "employees": [
+    {
+      "id": "employee1",
+      "name": "Ahmed",
+      "availability": {
+        "Monday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "Tuesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "Wednesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "Thursday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "Friday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "16:00"
+        }
+      }
+    },
+
+    {
+      "id": "employee2",
+      "name": "Sarah",
+      "availability": {
+        "Monday": {
+          "available": true,
+          "startTime": "13:00",
+          "endTime": "21:00"
+        },
+        "Tuesday": {
+          "available": true,
+          "startTime": "13:00",
+          "endTime": "21:00"
+        },
+        "Wednesday": {
+          "available": true,
+          "startTime": "13:00",
+          "endTime": "21:00"
+        },
+        "Thursday": {
+          "available": true,
+          "startTime": "13:00",
+          "endTime": "21:00"
+        },
+        "Friday": {
+          "available": true,
+          "startTime": "14:00",
+          "endTime": "22:00"
+        },
+        "Saturday": {
+          "available": true,
+          "startTime": "14:00",
+          "endTime": "22:00"
+        },
+        "Sunday": {
+          "available": true,
+          "startTime": "13:00",
+          "endTime": "21:00"
+        }
+      }
+    },
+
+    {
+      "id": "employee3",
+      "name": "John",
+      "availability": {
+        "Monday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Wednesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Friday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "22:00"
+        },
+        "Saturday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "22:00"
+        },
+        "Sunday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        }
+      }
+    },
+
+    {
+      "id": "employee4",
+      "name": "Adam",
+      "availability": {
+        "Tuesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Thursday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Friday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "22:00"
+        },
+        "Saturday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "22:00"
+        },
+        "Sunday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        }
+      }
+    },
+
+    {
+      "id": "employee5",
+      "name": "Maya",
+      "availability": {
+        "Monday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "21:00"
+        },
+        "Tuesday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "21:00"
+        },
+        "Wednesday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "21:00"
+        },
+        "Thursday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "21:00"
+        },
+        "Friday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "22:00"
+        },
+        "Saturday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "22:00"
+        },
+        "Sunday": {
+          "available": true,
+          "startTime": "10:00",
+          "endTime": "21:00"
+        }
+      }
+    },
+
+    {
+      "id": "employee6",
+      "name": "Daniel",
+      "availability": {
+        "Monday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Tuesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Wednesday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Thursday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        },
+        "Saturday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "22:00"
+        },
+        "Sunday": {
+          "available": true,
+          "startTime": "08:00",
+          "endTime": "21:00"
+        }
+      }
+    }
+  ],
+
+  "timeOff": [
+    {
+      "employeeId": "employee2",
+      "date": "2026-09-21",
+      "allDay": false,
+      "startTime": "15:00",
+      "endTime": "17:00"
+    }
+  ]
+}

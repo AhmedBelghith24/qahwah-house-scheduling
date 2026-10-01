@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+
+# Python virtual environments
+.venv/
+venv/
+optimizer/venv/
+optimizer/.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Vercel
+.vercel/
