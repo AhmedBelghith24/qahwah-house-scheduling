@@ -7,17 +7,59 @@ dotenv.config()
 
 const app = express()
 
-// ================================
+// ============================================================
+// DATABASE
+// ============================================================
+
+let connectionPromise = null
+
+const connectToDatabase = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(process.env.MONGO_URI)
+      .then(() => {
+        console.log('MongoDB connected successfully')
+      })
+      .catch((error) => {
+        connectionPromise = null
+        throw error
+      })
+  }
+
+  return connectionPromise
+}
+
+// ============================================================
 // MIDDLEWARE
-// ================================
+// ============================================================
 
 app.use(cors())
-
 app.use(express.json())
 
-// ================================
+// On Vercel, ensure MongoDB is connected
+// before processing API requests.
+if (process.env.VERCEL === '1') {
+  app.use(async (req, res, next) => {
+    try {
+      await connectToDatabase()
+      next()
+    } catch (error) {
+      console.error('MongoDB connection error:', error.message)
+
+      res.status(500).json({
+        message: 'Unable to connect to the database.',
+      })
+    }
+  })
+}
+
+// ============================================================
 // ROUTES
-// ================================
+// ============================================================
 
 const employeeRoutes = require('./routes/employees')
 const availabilityRoutes = require('./routes/availability')
@@ -25,16 +67,17 @@ const authRoutes = require('./routes/auth')
 const timeOffRequestRoutes = require('./routes/timeOffRequests')
 const scheduleRoutes = require('./routes/schedules')
 
-console.log('employeeRoutes:', typeof employeeRoutes)
-console.log('availabilityRoutes:', typeof availabilityRoutes)
-console.log('authRoutes:', typeof authRoutes)
-
 app.use('/api/employees', employeeRoutes)
 app.use('/api/availability', availabilityRoutes)
 app.use('/api/auth', authRoutes)
+
 app.use('/api/time-off-requests', timeOffRequestRoutes)
+
 app.use('/api/schedules', scheduleRoutes)
-// Test route
+
+// ============================================================
+// TEST ROUTE
+// ============================================================
 
 app.get('/api/test', (req, res) => {
   res.json({
@@ -42,22 +85,28 @@ app.get('/api/test', (req, res) => {
   })
 })
 
-// ================================
-// DATABASE + SERVER
-// ================================
+// ============================================================
+// LOCAL SERVER
+// ============================================================
 
-const PORT = process.env.PORT || 5001
+if (process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 5001
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected successfully')
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`)
+  connectToDatabase()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`)
+      })
     })
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:')
-    console.error(error.message)
-  })
+    .catch((error) => {
+      console.error('MongoDB connection error:', error.message)
+
+      process.exit(1)
+    })
+}
+
+// ============================================================
+// VERCEL EXPORT
+// ============================================================
+
+module.exports = app

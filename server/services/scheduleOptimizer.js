@@ -2,21 +2,23 @@ const { spawn } = require('child_process')
 const path = require('path')
 
 // ============================================================
-// PATHS
+// ENVIRONMENT
 // ============================================================
 
-const optimizerDirectory = path.join(__dirname, '..', '..', 'optimizer')
-
-const pythonPath = path.join(optimizerDirectory, 'venv', 'bin', 'python3')
-
-const optimizerPath = path.join(optimizerDirectory, 'optimizer.py')
+const isVercel = process.env.VERCEL === '1'
 
 // ============================================================
-// RUN PYTHON OR-TOOLS OPTIMIZER
+// LOCAL PYTHON OPTIMIZER
 // ============================================================
 
-const runScheduleOptimizer = (schedulingData) => {
+const runLocalOptimizer = (schedulingData) => {
   return new Promise((resolve, reject) => {
+    const optimizerDirectory = path.join(__dirname, '..', '..', 'optimizer')
+
+    const pythonPath = path.join(optimizerDirectory, 'venv', 'bin', 'python3')
+
+    const optimizerPath = path.join(optimizerDirectory, 'optimizer.py')
+
     const python = spawn(pythonPath, [optimizerPath], {
       cwd: optimizerDirectory,
     })
@@ -24,39 +26,23 @@ const runScheduleOptimizer = (schedulingData) => {
     let output = ''
     let errorOutput = ''
 
-    // ======================================================
-    // RECEIVE OUTPUT FROM PYTHON
-    // ======================================================
-
     python.stdout.on('data', (data) => {
       output += data.toString()
     })
-
-    // ======================================================
-    // RECEIVE PYTHON ERRORS
-    // ======================================================
 
     python.stderr.on('data', (data) => {
       errorOutput += data.toString()
     })
 
-    // ======================================================
-    // PYTHON FAILED TO START
-    // ======================================================
-
     python.on('error', (error) => {
-      console.error('Unable to start optimizer:', error)
+      console.error('Unable to start local optimizer:', error)
 
       reject(new Error('Unable to start schedule optimizer.'))
     })
 
-    // ======================================================
-    // PYTHON FINISHED
-    // ======================================================
-
     python.on('close', (code) => {
       if (code !== 0) {
-        console.error('Optimizer process failed.')
+        console.error('Local optimizer process failed.')
 
         console.error(errorOutput || output)
 
@@ -82,10 +68,6 @@ const runScheduleOptimizer = (schedulingData) => {
       }
     })
 
-    // ======================================================
-    // SEND SCHEDULING DATA TO PYTHON
-    // ======================================================
-
     try {
       python.stdin.write(JSON.stringify(schedulingData))
 
@@ -94,6 +76,56 @@ const runScheduleOptimizer = (schedulingData) => {
       reject(error)
     }
   })
+}
+
+// ============================================================
+// VERCEL PYTHON OPTIMIZER
+// ============================================================
+
+const runVercelOptimizer = async (schedulingData) => {
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.APP_URL
+
+  if (!baseUrl) {
+    throw new Error('Production application URL is not configured.')
+  }
+
+  const response = await fetch(`${baseUrl}/api/optimizer`, {
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json',
+    },
+
+    body: JSON.stringify(schedulingData),
+  })
+
+  let result
+
+  try {
+    result = await response.json()
+  } catch {
+    throw new Error('Optimizer returned an invalid response.')
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Schedule optimizer failed.')
+  }
+
+  return result
+}
+
+// ============================================================
+// MAIN OPTIMIZER SERVICE
+// ============================================================
+
+const runScheduleOptimizer = async (schedulingData) => {
+  if (isVercel) {
+    return runVercelOptimizer(schedulingData)
+  }
+
+  return runLocalOptimizer(schedulingData)
 }
 
 module.exports = {

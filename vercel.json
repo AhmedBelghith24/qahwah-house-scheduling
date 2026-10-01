@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/optimizer",
+      "destination": "/api/optimizer"
+    },
+    {
+      "source": "/api/:path((?!optimizer).*)",
+      "destination": "/api/server"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
