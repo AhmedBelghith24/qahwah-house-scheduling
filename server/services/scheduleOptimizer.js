@@ -1,17 +1,9 @@
 const { spawn } = require('child_process')
 const path = require('path')
 
-// ============================================================
-// ENVIRONMENT
-// ============================================================
-
 const isVercel = process.env.VERCEL === '1'
 
-// ============================================================
-// LOCAL PYTHON OPTIMIZER
-// ============================================================
-
-const runLocalOptimizer = (schedulingData) => {
+const runLocalOptimizer = (payload) => {
   return new Promise((resolve, reject) => {
     const optimizerDirectory = path.join(__dirname, '..', '..', 'optimizer')
 
@@ -23,109 +15,89 @@ const runLocalOptimizer = (schedulingData) => {
       cwd: optimizerDirectory,
     })
 
-    let output = ''
-    let errorOutput = ''
+    let stdout = ''
+    let stderr = ''
 
     python.stdout.on('data', (data) => {
-      output += data.toString()
+      stdout += data.toString()
     })
 
     python.stderr.on('data', (data) => {
-      errorOutput += data.toString()
+      stderr += data.toString()
     })
 
     python.on('error', (error) => {
-      console.error('Unable to start local optimizer:', error)
-
-      reject(new Error('Unable to start schedule optimizer.'))
+      reject(new Error(`Failed to start schedule optimizer: ${error.message}`))
     })
 
     python.on('close', (code) => {
       if (code !== 0) {
-        console.error('Local optimizer process failed.')
+        console.error('Optimizer stderr:', stderr)
 
-        console.error(errorOutput || output)
-
-        return reject(new Error('Schedule optimizer failed.'))
+        return reject(
+          new Error(stderr || `Schedule optimizer exited with code ${code}`),
+        )
       }
 
       try {
-        const result = JSON.parse(output)
-
-        if (!result.success) {
-          return reject(
-            new Error(
-              result.message || 'Optimizer could not generate a schedule.',
-            ),
-          )
-        }
-
+        const result = JSON.parse(stdout)
         resolve(result)
       } catch (error) {
-        console.error('Invalid optimizer output:', output)
+        console.error('Optimizer stdout:', stdout)
+        console.error('Optimizer stderr:', stderr)
 
-        reject(new Error('Optimizer returned invalid JSON.'))
+        reject(new Error('Schedule optimizer returned invalid JSON.'))
       }
     })
 
-    try {
-      python.stdin.write(JSON.stringify(schedulingData))
-
-      python.stdin.end()
-    } catch (error) {
-      reject(error)
-    }
+    python.stdin.write(JSON.stringify(payload))
+    python.stdin.end()
   })
 }
 
-// ============================================================
-// VERCEL PYTHON OPTIMIZER
-// ============================================================
+const runVercelOptimizer = async (payload) => {
+  const optimizerUrl = process.env.OPTIMIZER_URL
 
-const runVercelOptimizer = async (schedulingData) => {
-  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : process.env.APP_URL
-
-  if (!baseUrl) {
-    throw new Error('Production application URL is not configured.')
+  if (!optimizerUrl) {
+    throw new Error('OPTIMIZER_URL service binding is not configured.')
   }
 
-  const response = await fetch(`${baseUrl}/api/optimizer`, {
-    method: 'POST',
+  const url = new URL('/optimize', optimizerUrl)
 
+  const response = await fetch(url, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-
-    body: JSON.stringify(schedulingData),
+    body: JSON.stringify(payload),
   })
 
   let result
 
   try {
     result = await response.json()
-  } catch {
-    throw new Error('Optimizer returned an invalid response.')
+  } catch (error) {
+    throw new Error(
+      `Optimizer returned an invalid response (${response.status}).`,
+    )
   }
 
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || 'Schedule optimizer failed.')
+  if (!response.ok) {
+    const message =
+      result?.detail || result?.message || 'Schedule optimization failed.'
+
+    throw new Error(message)
   }
 
   return result
 }
 
-// ============================================================
-// MAIN OPTIMIZER SERVICE
-// ============================================================
-
-const runScheduleOptimizer = async (schedulingData) => {
+const runScheduleOptimizer = async (payload) => {
   if (isVercel) {
-    return runVercelOptimizer(schedulingData)
+    return runVercelOptimizer(payload)
   }
 
-  return runLocalOptimizer(schedulingData)
+  return runLocalOptimizer(payload)
 }
 
 module.exports = {

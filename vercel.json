@@ -1,16 +1,46 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "vite"
+    },
+    "server": {
+      "root": "server",
+      "framework": "express",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "optimizer",
+          "format": "url",
+          "env": "OPTIMIZER_URL"
+        }
+      ]
+    },
+    "optimizer": {
+      "root": "optimizer",
+      "framework": "fastapi",
+      "entrypoint": "main:app"
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/optimizer",
-      "destination": "/api/optimizer"
+      "source": "/api",
+      "destination": {
+        "service": "server"
+      }
     },
     {
-      "source": "/api/:path((?!optimizer).*)",
-      "destination": "/api/server"
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "server"
+      }
     },
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": {
+        "service": "app"
+      }
     }
   ]
 }
