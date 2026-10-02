@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-
-const API_URL = 'http://localhost:5001/api/auth/activate'
+import api from '../api/axios'
 
 function ActivateAccount() {
   const navigate = useNavigate()
@@ -45,7 +43,7 @@ function ActivateAccount() {
     try {
       setLoading(true)
 
-      const response = await axios.post(API_URL, {
+      const response = await api.post('/auth/activate', {
         email: form.email,
         password: form.password,
       })
