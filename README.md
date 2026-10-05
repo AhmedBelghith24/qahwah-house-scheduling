@@ -16,6 +16,84 @@ The scheduling engine is built with **Google OR-Tools CP-SAT**, allowing the sys
 
 ---
 
+## Application Screenshots
+
+### Authentication
+
+The application provides secure authentication and role-based access for managers and employees.
+
+<p align="center">
+  <img src="docs/screenshots/login.png" alt="Qahwah House Scheduling Login" width="900">
+</p>
+
+---
+
+### Manager — Weekly Schedule
+
+Managers can generate, review, manually adjust, and publish weekly schedules. The schedule timeline provides a visual overview of employee shifts and highlights staffing coverage issues.
+
+<p align="center">
+  <img src="docs/screenshots/admin-weekly-schedule.png" alt="Manager Weekly Schedule" width="1000">
+</p>
+
+### Manager — Employee Management
+
+Managers can manage employees, station qualifications, employment status, and weekly hour limits.
+
+<p align="center">
+  <img src="docs/screenshots/admin-employees.png" alt="Employee Management" width="1000">
+</p>
+
+### Manager — Employee Availability
+
+Employee availability is stored by week and made available to the scheduling engine when generating schedules.
+
+<p align="center">
+  <img src="docs/screenshots/admin-availability.png" alt="Employee Availability Management" width="1000">
+</p>
+
+### Manager — Time-Off Requests
+
+Managers can review employee time-off requests and approve or deny them before generating a schedule.
+
+<p align="center">
+  <img src="docs/screenshots/admin-time-off-requests.png" alt="Manager Time-Off Requests" width="1000">
+</p>
+
+---
+
+### Employee Dashboard
+
+Employees have a dedicated dashboard showing their weekly hours, upcoming shifts, schedule status, availability, and time-off activity.
+
+<p align="center">
+  <img src="docs/screenshots/employee-dashboard.png" alt="Employee Dashboard" width="1000">
+</p>
+
+### Employee Schedule
+
+Employees can view published schedules while navigating between previous, current, and upcoming weeks.
+
+<p align="center">
+  <img src="docs/screenshots/employee-schedule.png" alt="Employee Weekly Schedule" width="1000">
+</p>
+
+### Employee Availability
+
+Employees can define the days and hours they are available to work. This availability becomes a scheduling constraint used by the optimization engine.
+
+<p align="center">
+  <img src="docs/screenshots/employee-availability.png" alt="Employee Availability" width="1000">
+</p>
+
+### Employee Time-Off
+
+Employees can submit full-day or partial-day time-off requests and track their approval status.
+
+<p align="center">
+  <img src="docs/screenshots/employee-time-off.png" alt="Employee Time-Off Request" width="1000">
+</p>
+
 ## Key Features
 
 ### Manager / Admin
